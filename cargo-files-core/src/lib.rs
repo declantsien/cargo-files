@@ -1,7 +1,7 @@
 // Inspired by  https://github.com/rust-lang/rustfmt
 pub mod parser;
 
-use crate::parser::extract_crate_files;
+pub use crate::parser::extract_module_files;
 use cargo_metadata::Edition;
 use std::cmp::Ordering;
 use std::collections::{BTreeSet, HashSet};
@@ -31,7 +31,7 @@ pub enum Error {
 /// Get all source files for the given target.
 pub fn get_target_files(target: &Target) -> Result<HashSet<PathBuf>, Error> {
     let mut acc = HashSet::new();
-    extract_crate_files(&target.path, &mut acc)?;
+    extract_module_files(&target.path, &mut acc)?;
     Ok(acc)
 }
 

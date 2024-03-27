@@ -134,7 +134,8 @@ impl Module {
     }
 }
 
-pub fn extract_crate_files(path: &Path, acc: &mut HashSet<PathBuf>) -> Result<(), Error> {
+// extract all mod definitions corresponding files in path
+pub fn extract_module_files(path: &Path, acc: &mut HashSet<PathBuf>) -> Result<(), Error> {
     acc.insert(path.to_path_buf());
     let source = fs::read_to_string(path)?;
 
@@ -145,7 +146,7 @@ pub fn extract_crate_files(path: &Path, acc: &mut HashSet<PathBuf>) -> Result<()
 
     for module in visitor.modules {
         let module_path = module.resolve(path)?;
-        extract_crate_files(&module_path, acc)?;
+        extract_module_files(&module_path, acc)?;
         acc.insert(module_path);
     }
 
