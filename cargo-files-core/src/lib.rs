@@ -37,13 +37,13 @@ pub fn get_target_files(target: &Target) -> Result<HashSet<PathBuf>, Error> {
 
 /// Get all targets within the given cargo workspace.
 pub fn get_targets(manifest_path: Option<&Path>) -> Result<BTreeSet<Target>, Error> {
-    if let Some(specified_manifest_path) = manifest_path {
-        if !specified_manifest_path.ends_with("Cargo.toml") {
-            return Err(Error::ManifestNotCargoToml);
-        }
-        _get_targets(Some(specified_manifest_path))
+    let mut targets = BTreeSet::new();
+    get_targets_recursive(manifest_path, &mut targets, &mut BTreeSet::new())?;
+
+    if targets.is_empty() {
+        Err(Error::NoTargets)
     } else {
-        _get_targets(None)
+        Ok(targets)
     }
 }
 
@@ -94,18 +94,6 @@ impl Eq for Target {}
 impl Hash for Target {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.path.hash(state);
-    }
-}
-
-/// Get all targets from the specified manifest.
-fn _get_targets(manifest_path: Option<&Path>) -> Result<BTreeSet<Target>, Error> {
-    let mut targets = BTreeSet::new();
-    get_targets_recursive(manifest_path, &mut targets, &mut BTreeSet::new())?;
-
-    if targets.is_empty() {
-        Err(Error::NoTargets)
-    } else {
-        Ok(targets)
     }
 }
 
